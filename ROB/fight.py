@@ -11,7 +11,6 @@ screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
 bg_image = [pygame.image.load('pics//arena_bakgrund_0.png'),pygame.image.load('pics//arena_bakgrund_1.png')]
 
-
 fps_clock = pygame.time.Clock()
 fps = 120
 
@@ -36,6 +35,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = (0, 0, 0, 0)
         self.images = []
         self.image = [pygame.image.load("pics//walking_right_2.png")]
+        self.hp = 100
 
 
 def player1_pics(self):
@@ -71,20 +71,23 @@ def collision(player1, player2):
 
 
 def player_movement(player1, player2):
+    # Grund inställningar
     player1.rect.y += player1.vel
     player2.rect.y += player2.vel
     if player1.rect.y == 500:
         player1.vel = 0
     if player2.rect.y == 500:
         player2.vel = 0
-
     keys = pygame.key.get_pressed()
+
+
+    # FIGHTER 1
     if keys[pygame.K_LEFT] and player1.rect.x > player1.vel:
         player1.left = True
         player1.right = False
         if collision(player1, player2) == True:
             if player1.left == True:
-                player1.rect.x += 5
+                player1.rect.x += 10
                 #TODO det finns en bug där man flyger utanför skärmen om spelarna kolliderar och går åt ett håll tillsammans
         player1.rect.x -= 1
         player1.image = pygame.transform.flip(player1.images[player1.frame], True, False)
@@ -97,7 +100,7 @@ def player_movement(player1, player2):
         player1.right = True
         if collision(player1, player2) == True:
             if player1.right == True:
-                player1.rect.x -= 5
+                player1.rect.x -= 10
 
         player1.rect.x += 1
         player1.frame += 1
@@ -105,7 +108,8 @@ def player_movement(player1, player2):
             player1.frame = 0
         player1.image = player1.images[player1.frame]
 
-    if keys[pygame.K_UP]:
+
+    if keys[pygame.K_RCTRL]:
         # hoppets höjd
         player1.rect.y -= 15
         # dragningskraft
@@ -117,12 +121,17 @@ def player_movement(player1, player2):
     if player1.rect.y > 500:
         player1.rect.y = 500
 
+
+
+
+
+    # FIGTER 2
     if keys[pygame.K_a] and player2.rect.x > player2.vel:
         player2.left = True
         player2.right = False
         if collision(player1, player2) == True:
             if player2.left == True:
-                player2.rect.x += 5
+                player2.rect.x += 10
         player2.rect.x -= 1
         player2.image = pygame.transform.flip(player2.images[player2.frame], True, False)
         player2.frame += 1
@@ -134,13 +143,14 @@ def player_movement(player1, player2):
         player2.right = True
         if collision(player1, player2) == True:
             if player2.right == True:
-                player2.rect.x -= 5
+                player2.rect.x -= 10
         player2.rect.x += 1
         player2.frame += 1
         if player2.frame == 2:
             player2.frame = 0
         player2.image = player2.images[player2.frame]
 
+    # hopp
     if keys[pygame.K_SPACE]:
         # hoppets höjd
         player2.rect.y -= 15
@@ -158,7 +168,37 @@ def player_movement(player1, player2):
 # run order
 main_menu()
 lobby()
-pygame.mixer.music.stop()
+# pygame.mixer.music.stop()
+# pygame.mixer.music.load('music//fight_music.ogg')
+# pygame.mixer.music.play(-1)
+
+def punch_and_kick():
+    # fighter2 slag och spark
+        if keys.type == pygame.KEYDOWN:
+            if keys.key == pygame.K_UP:
+                if collision(player1, player2) == True:
+                    print("slag")
+                    player2.hp -= 10
+                    print(player2.hp)
+            if keys.key == pygame.K_DOWN:
+                if collision(player1, player2) == True:
+                    print("spark")
+                    player2.hp -= 10
+                    print(player2.hp)
+
+            #fighter1 slag och spark
+            if keys.type == pygame.K_w:
+                if collision(player1, player2) == True:
+                    print("slag")
+                    player1.hp -= 10
+                    print(player1.hp)
+            if keys.type == pygame.K_s:
+                if collision(player1, player2) == True:
+                    print("spark")
+                    player1.hp -= 10
+                    print(player1.hp)
+
+
 
 running = True
 while running:
@@ -169,6 +209,7 @@ while running:
     for keys in pygame.event.get():
         if keys.type == pygame.QUIT:
             running = False
+        punch_and_kick()
     player_movement(player1, player2)
     pygame.display.update()
 
